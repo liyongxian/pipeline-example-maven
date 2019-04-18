@@ -3,8 +3,7 @@ stages:
   steps:
   - runScriptConfig:
       image: maven:3-jdk-7
-      shellScript: |-
-        mvn clean install
+      shellScript: mvn clean install
 - name: Publish
   steps:
   - publishImageConfig:
@@ -15,3 +14,23 @@ stages:
   steps:
   - applyYamlConfig:
       path: ./deployment.yaml
+- name: deploy-chart
+  steps:
+  - publishCatalogConfig:
+      path: ./chart
+      catalogTemplate: example-java
+      version: 1.0.0
+      gitUrl: https://github.com/liyongxian/chart.git
+      gitBranch: master
+      gitAuthor: hollysys
+      gitEmail: gostboy@163.com
+    env:
+      spring.cloud.config.uri: http://webserver-srv.public.svc.cluster.local
+    envFrom:
+    - sourceName: pipeline-uaa
+      sourceKey: USERNAME
+      targetKey: USERNAME
+    - sourceName: pipeline-uaa
+      sourceKey: PASSWORD
+      targetKey: PASSWORD
+notification: {}
